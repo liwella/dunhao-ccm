@@ -1,7 +1,5 @@
-import { defineAsyncComponent } from 'vue'
 import { defineStore } from 'pinia'
 import { asyncRoutes, basicRoutes } from '@/router/routes'
-import api from '@/api'
 
 function hasPermission(route, role) {
   // * 不需要权限直接返回true
@@ -35,36 +33,75 @@ function filterAsyncRoutes(routes = [], role) {
   return ret
 }
 
-function transferMenuToRoutes(menus = []) {
-  const ret = []
-  menus.forEach((menu) => {
-    const { menuName, url, permission, type, icon, children } = menu
-    if (type.value === 3) {
-      return
-    }
-    const curRoute = {
-      name: permission,
-      path: url,
-      component: getComponent(url, type),
-      meta: {
-        title: menuName,
-        icon: icon,
-        requireAuth: true,
-      },
-      children: children?.length !== 0 ? transferMenuToRoutes(children) : [],
-    }
-    ret.push(curRoute)
-  })
-  return ret
-}
+// function transferMenuToRoutes(menus = []) {
+//   const ret = []
+//   menus.forEach((menu) => {
+//     const { menuName, url, permission, type, icon, children } = menu
+//     if (type.value === 3) {
+//       return
+//     }
+//     const curRoute = {
+//       name: permission,
+//       path: url,
+//       component: getComponent(url, type),
+//       meta: {
+//         title: menuName,
+//         icon: icon,
+//         requireAuth: true,
+//       },
+//       children: children?.length !== 0 ? transferMenuToRoutes(children) : [],
+//     }
+//     ret.push(curRoute)
+//   })
+//   return ret
+// }
 
-function getComponent(url, type) {
-  if (type.value === 2) {
-    return () => import('@/layout/index.vue')
-  } else if (type.value === 1) {
-    return () => defineAsyncComponent(() => import(/* @vite-ignore */ `@/views${url}/index.vue`))
-  }
-}
+// function transferMenuToRoutes(menus = []) {
+//   const ret = []
+//   menus.forEach((menu) => {
+//     const { menuName, url, permission, level, type, icon, children } = menu
+//     if (type.value === 3) {
+//       return
+//     }
+//     const curRoute = new Object()
+//     if (level === 0 && type.value === 1) {
+//       curRoute.name = permission
+//       curRoute.path = url
+//       curRoute.component = () => import('@/layout/index.vue')
+//       curRoute.redirect = url + '/work'
+//       const child = {}
+//       child.name = permission + '.work'
+//       child.url = 'work'
+//       child.component = getComponent(url, type)
+//       const meta = {}
+//       meta.title = menuName
+//       meta.icon = icon
+//       meta.order = 0
+//       child.meta = meta
+//       curRoute.children = [child]
+//     } else {
+//       curRoute.name = permission
+//       curRoute.path = url
+//       curRoute.component = getComponent(url, type)
+//       const meta = {}
+//       meta.title = menuName
+//       meta.icon = icon
+//       meta.requireAuth = true
+//       curRoute.meta = meta
+//       curRoute.children = children?.length !== 0 ? transferMenuToRoutes(children) : []
+//     }
+//     ret.push(curRoute)
+//   })
+//   return ret
+// }
+
+// function getComponent(url, type) {
+//   if (type.value === 2) {
+//     return () => import('@/layout/index.vue')
+//   } else if (type.value === 1) {
+//     return () => defineAsyncComponent(() => import(/* @vite-ignore */ `@/views${url}/index.vue`))
+//   }
+// }
 
 export const usePermissionStore = defineStore('permission', {
   state() {
@@ -81,11 +118,8 @@ export const usePermissionStore = defineStore('permission', {
     },
   },
   actions: {
-    async generateRoutes(role = []) {
-      const data = await api.listMenu()
-      const serviceRoutes = transferMenuToRoutes(data?.data)
+    generateRoutes(role = []) {
       const accessRoutes = filterAsyncRoutes(asyncRoutes, role)
-      accessRoutes.push(...serviceRoutes)
       this.accessRoutes = accessRoutes
       return accessRoutes
     },
