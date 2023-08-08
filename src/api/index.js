@@ -1,6 +1,7 @@
 import { request } from '@/utils'
 
 export default {
-  getUser: () => request.get('/user'),
-  refreshToken: () => request.post('/auth/refreshToken', null, { noNeedTip: true }),
+  getUser: () => request.post('/user/getUser'),
+  listMenu: () => request.post('/menu/listMenu'),
+  refreshToken: () => request.post('/user/refreshToken', null, { noNeedTip: true }),
 }

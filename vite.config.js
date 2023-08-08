@@ -23,7 +23,7 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: createVitePlugins(viteEnv, isBuild),
     server: {
-      host: '0.0.0.0',
+      host: 'localhost',
       port: VITE_PORT,
       open: false,
       proxy: VITE_USE_PROXY

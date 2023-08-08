@@ -6,10 +6,10 @@ export const PROXY_CONFIG = {
    * @请求路径  http://localhost:3100/api/user
    * @转发路径  http://localhost:8080/user
    */
-  '/api': {
-    target: 'http://localhost:8080',
+  '/cinema': {
+    target: 'http://localhost:9000',
     changeOrigin: true,
-    rewrite: (path) => path.replace(new RegExp('^/api'), ''),
+    // rewrite: (path) => path.replace(new RegExp('^/cinema'), ''),
   },
   /**
    * @desc    不替换匹配值
