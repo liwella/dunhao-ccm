@@ -1,4 +1,4 @@
-import { request } from '@/utils'
+import { request, serviceRequest } from '@/utils'
 
 export default {
   getUser: () => request.post('/user/getUser'),

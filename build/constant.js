@@ -6,18 +6,18 @@ export const PROXY_CONFIG = {
    * @请求路径  http://localhost:3100/api/user
    * @转发路径  http://localhost:8080/user
    */
-  '/cinema': {
-    target: 'http://localhost:9000',
+  '/api': {
+    target: 'http://localhost:8080',
     changeOrigin: true,
-    // rewrite: (path) => path.replace(new RegExp('^/cinema'), ''),
+    rewrite: (path) => path.replace(new RegExp('^/api'), ''),
   },
   /**
    * @desc    不替换匹配值
    * @请求路径  http://localhost:3100/api/v2/user
    * @转发路径  http://localhost:8080/api/v2/user
    */
-  '/api/v2': {
-    target: 'http://localhost:8080',
+  '/dunhao': {
+    target: 'http://localhost:9000',
     changeOrigin: true,
   },
   /**
