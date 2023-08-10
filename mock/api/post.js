@@ -86,7 +86,7 @@ export default [
         total = 0
       }
       return {
-        code: 0,
+        code: 200,
         message: 'ok',
         data: {
           pageData,
@@ -102,7 +102,7 @@ export default [
     method: 'post',
     response: ({ body }) => {
       return {
-        code: 0,
+        code: 200,
         message: 'ok',
         data: body,
       }
@@ -113,7 +113,7 @@ export default [
     method: 'put',
     response: ({ query, body }) => {
       return {
-        code: 0,
+        code: 200,
         message: 'ok',
         data: {
           id: query.id,
@@ -127,7 +127,7 @@ export default [
     method: 'delete',
     response: ({ query }) => {
       return {
-        code: 0,
+        code: 200,
         message: 'ok',
         data: {
           id: query.id,

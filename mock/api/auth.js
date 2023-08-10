@@ -12,7 +12,7 @@ export default [
     response: ({ body }) => {
       if (['admin', 'editor'].includes(body?.name)) {
         return {
-          code: 0,
+          code: 200,
           data: {
             token: token[body.name],
           },
@@ -30,7 +30,7 @@ export default [
     method: 'post',
     response: ({ headers }) => {
       return {
-        code: 0,
+        code: 200,
         data: {
           token: resolveToken(headers?.authorization),
         },

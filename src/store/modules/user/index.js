@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', {
       try {
         const res = await api.getUser()
         const { id, username, avatar, role } = res.data
-        this.userInfo = { id, name: username, avatar, role: [role.code] }
+        this.userInfo = { id, name: username, avatar, role: role }
         return Promise.resolve(res.data)
       } catch (error) {
         return Promise.reject(error)
