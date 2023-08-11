@@ -19,16 +19,24 @@
       :extra-params="extraParams"
       :scroll-x="1200"
       :columns="columns"
-      :get-data="api.getPosts"
+      :get-data="api.pageMovie"
       @on-checked="onChecked"
       @on-data-change="(data) => (tableData = data)"
     >
       <template #queryBar>
         <QueryBarItem label="片名" :label-width="50">
           <n-input
-            v-model:value="queryItems.title"
+            v-model:value="queryItems.mvName"
             type="text"
             placeholder="请输入片名"
+            @keypress.enter="$table?.handleSearch"
+          />
+        </QueryBarItem>
+        <QueryBarItem label="类型" :label-width="50">
+          <n-input
+            v-model:value="queryItems.mvType"
+            type="text"
+            placeholder="请输入类型"
             @keypress.enter="$table?.handleSearch"
           />
         </QueryBarItem>
@@ -44,44 +52,100 @@
     >
       <n-form
         ref="modalFormRef"
+        :model="modalForm"
         label-placement="left"
         label-align="left"
         :label-width="80"
-        :model="modalForm"
         :disabled="modalAction === 'view'"
       >
-        <n-form-item label="作者" path="author">
-          <n-input v-model:value="modalForm.author" disabled />
+        <n-form-item label="影片id" path="movieId">
+          <n-input v-model:value="modalForm.movieId" disabled />
         </n-form-item>
         <n-form-item
-          label="文章标题"
-          path="title"
+          label="影片名称"
+          path="mvName"
           :rule="{
             required: true,
-            message: '请输入文章标题',
+            message: '请输入影片名称',
             trigger: ['input', 'blur'],
           }"
         >
-          <n-input v-model:value="modalForm.title" placeholder="请输入文章标题" />
+          <n-input v-model:value="modalForm.mvName" />
         </n-form-item>
         <n-form-item
-          label="文章内容"
-          path="content"
+          label="影片分类"
+          path="categoryName"
           :rule="{
             required: true,
-            message: '请输入文章内容',
+            message: '请选择',
             trigger: ['input', 'blur'],
           }"
         >
-          <n-input
-            v-model:value="modalForm.content"
-            placeholder="请输入文章内容"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 5,
-            }"
+          <n-input v-model:value="modalForm.categoryName" placeholder="请选择" />
+        </n-form-item>
+        <n-form-item
+          v-if="modalForm.mvArea"
+          label="地区"
+          path="mvArea"
+          :rule="{
+            required: false,
+            message: '请选择地区',
+            trigger: ['input', 'blur'],
+          }"
+        >
+          <n-input v-model:value="modalForm.mvArea.description" placeholder="请选择地区" />
+        </n-form-item>
+        <n-form-item label="创建时间" path="createTime">
+          <n-date-picker
+            v-model:formatted-value="modalForm.createTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            clearable
           />
+        </n-form-item>
+        <n-form-item label="最后更新时间" path="updateTime">
+          <n-date-picker
+            v-model:formatted-value="modalForm.updateTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="datetime"
+            clearable
+          />
+        </n-form-item>
+        <n-form-item
+          label="最新集数"
+          path="updateInfo"
+          :rule="{
+            required: true,
+            message: '请输入最新集数',
+            trigger: ['input', 'blur'],
+          }"
+        >
+          <n-input v-model:value="modalForm.updateInfo" placeholder="请输入最新集数" />
+        </n-form-item>
+        <n-form-item label="详情" path="description">
+          <n-input v-model:value="modalForm.description" placeholder="请输入详情" type="textarea" />
+        </n-form-item>
+        <n-form-item label="演员列表" path="actorList">
+          <n-input v-model:value="modalForm.actorList" placeholder="请输入演员列表" />
+        </n-form-item>
+        <n-form-item label="导演列表" path="directorList">
+          <n-input v-model:value="modalForm.directorList" placeholder="请输入导演列表" />
+        </n-form-item>
+        <n-form-item v-if="modalForm.state" label="状态" path="state">
+          <n-select v-model:value="modalForm.state.value" :options="stateOptions" />
+        </n-form-item>
+        <n-form-item label="影片主图" path="picture">
+          <n-input v-model:value="modalForm.picture" placeholder="请输入导演列表" />
+        </n-form-item>
+        <n-form-item>
+          <n-card w-3xl>
+            <template #cover>
+              <img :src="modalForm.picture" />
+            </template>
+          </n-card>
+        </n-form-item>
+        <n-form-item label="评分" path="score">
+          <n-input v-model:value="modalForm.score" placeholder="请输入评分" />
         </n-form-item>
       </n-form>
     </CrudModal>
@@ -90,9 +154,10 @@
 
 <script setup>
 import { NButton } from 'naive-ui'
-import { formatDateTime, renderIcon } from '@/utils'
+import { renderIcon } from '@/utils'
 import { useCRUD } from '@/composables'
 import api from './api'
+import { onMounted } from 'vue'
 
 defineOptions({ name: 'Crud' })
 
@@ -104,43 +169,47 @@ const queryItems = ref({})
 /** 补充参数（可选） */
 const extraParams = ref({})
 
-onActivated(() => {
+const stateOptions = ref([
+  {
+    label: '有效',
+    value: 1,
+  },
+  {
+    label: '无效',
+    value: 0,
+  },
+])
+
+onMounted(() => {
   $table.value?.handleSearch()
 })
 
 const columns = [
   { type: 'selection', fixed: 'left' },
   { title: '影片名称', key: 'mvName', width: 150, ellipsis: { tooltip: true } },
-  { title: '分类', key: 'mvType', width: 80, ellipsis: { tooltip: true } },
-  { title: '地区', key: 'mvArea', width: 80 },
-  {
-    title: '出厂年份',
-    key: 'mvYear',
-    width: 80,
-  },
+  { title: '分类', key: 'categoryName', width: 80, ellipsis: { tooltip: true } },
+  { title: '地区', key: 'mvArea.description', width: 80 },
   {
     title: '创建时间',
     key: 'createTime',
-    width: 150,
+    width: 180,
     render(row) {
-      return h('span', formatDateTime(row['createDate']))
+      return h('span', row['createTime'])
     },
   },
   {
     title: '最后更新时间',
     key: 'updateTime',
-    width: 150,
+    width: 180,
     render(row) {
-      return h('span', formatDateTime(row['updateDate']))
+      return h('span', row['updateTime'])
     },
   },
   { title: '最新集数', key: 'updateInfo', width: 80 },
-  { title: '详情', key: 'description', width: 150, ellipsis: { tooltip: true } },
   { title: '演员列表', key: 'actorList', width: 150, ellipsis: { tooltip: true } },
   { title: '导演列表', key: 'directorList', width: 150, ellipsis: { tooltip: true } },
-  { title: '状态', key: '影片状态', width: 80 },
-  { title: '影片主图', key: 'picture', width: 80, ellipsis: { tooltip: true } },
-  { title: '大图（轮播）', key: 'screenPicture', width: 80, ellipsis: { tooltip: true } },
+  { title: '状态', key: 'state.description', width: 80 },
+  { title: '影片主图', key: 'picture', width: 150, ellipsis: { tooltip: true } },
   { title: '评分', key: 'score', width: 80 },
   {
     title: '操作',
@@ -171,14 +240,13 @@ const columns = [
           },
           { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
         ),
-
         h(
           NButton,
           {
             size: 'small',
             type: 'error',
             style: 'margin-left: 15px;',
-            onClick: () => handleDelete(row.id),
+            onClick: () => handleDelete(row.movieId),
           },
           {
             default: () => '删除',
@@ -213,6 +281,7 @@ const {
   doCreate: api.addPost,
   doDelete: api.deletePost,
   doUpdate: api.updatePost,
+  doSearch: api.detail,
   refresh: () => $table.value?.handleSearch(),
 })
 </script>

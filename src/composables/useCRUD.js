@@ -6,7 +6,7 @@ const ACTIONS = {
   add: '新增',
 }
 
-export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, refresh }) {
+export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, doSearch, refresh }) {
   const modalVisible = ref(false)
   const modalAction = ref('')
   const modalTitle = computed(() => ACTIONS[modalAction.value] + name)
@@ -22,17 +22,20 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, re
   }
 
   /** 修改 */
-  function handleEdit(row) {
+  async function handleEdit(row) {
     modalAction.value = 'edit'
     modalVisible.value = true
-    modalForm.value = { ...row }
+    // modalForm.value = { ...row }
+    const data = await doSearch({ id: row.movieId })
+    modalForm.value = { ...data?.data }
   }
 
   /** 查看 */
-  function handleView(row) {
+  async function handleView(row) {
     modalAction.value = 'view'
     modalVisible.value = true
-    modalForm.value = { ...row }
+    const data = await doSearch({ id: row.movieId })
+    modalForm.value = { ...data?.data }
   }
 
   /** 保存 */

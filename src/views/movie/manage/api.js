@@ -1,6 +1,8 @@
-import { request } from '@/utils'
+import { request, serviceRequest } from '@/utils'
 
 export default {
+  pageMovie: (params = {}) => serviceRequest.post('/movie/pageMovie', params),
+  detail: (params = {}) => serviceRequest.post('/movie/detail', params),
   getPosts: (params = {}) => request.get('posts', { params }),
   getPostById: (id) => request.get(`/post/${id}`),
   addPost: (data) => request.post('/post', data),
