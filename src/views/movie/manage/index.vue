@@ -49,6 +49,7 @@
       :loading="modalLoading"
       :show-footer="modalAction !== 'view'"
       @on-save="handleSave"
+      @modal-invisible="modalInvisible"
     >
       <n-form
         ref="modalFormRef"
@@ -77,11 +78,17 @@
           path="categoryName"
           :rule="{
             required: true,
-            message: '请选择',
+            message: '请选择分类',
             trigger: ['input', 'blur'],
           }"
         >
-          <n-input v-model:value="modalForm.categoryName" placeholder="请选择" />
+          <n-select
+            v-model:value="modalForm.mvType"
+            placeholder="请选择分类"
+            filterable
+            :options="categoryOptions"
+            :loading="categoryLoading"
+          />
         </n-form-item>
         <n-form-item
           v-if="modalForm.mvArea"
@@ -95,6 +102,14 @@
         >
           <n-input v-model:value="modalForm.mvArea.description" placeholder="请选择地区" />
         </n-form-item>
+        <!-- <n-form-item label="出场年份" path="mvYear">
+          <n-date-picker
+            v-model:formatted-value="modalForm.mvYear"
+            value-format="yyyy"
+            type="year"
+            clearable
+          />
+        </n-form-item> -->
         <n-form-item label="创建时间" path="createTime">
           <n-date-picker
             v-model:formatted-value="modalForm.createTime"
@@ -169,6 +184,11 @@ const queryItems = ref({})
 /** 补充参数（可选） */
 const extraParams = ref({})
 
+onMounted(() => {
+  $table.value?.handleSearch()
+})
+
+// 影片状态选择初始化
 const stateOptions = ref([
   {
     label: '有效',
@@ -180,9 +200,51 @@ const stateOptions = ref([
   },
 ])
 
-onMounted(() => {
-  $table.value?.handleSearch()
-})
+// 分类选择初始化
+const categoryLoading = ref(false)
+const categoryOptions = ref([])
+async function loadingCategory() {
+  categoryLoading.value = true
+  const result = await api.listCategory()
+  filterCategory(result?.data)
+  categoryLoading.value = false
+}
+function filterCategory(data = []) {
+  data.forEach((item) => {
+    const category = {
+      label: item.name,
+      value: item.id,
+    }
+    categoryOptions.value.push(category)
+    if (item.children && item.children.length) {
+      filterCategory(item.children)
+    }
+    // if (item.level === 0) {
+    //   const category = {
+    //     type: 'group',
+    //     label: item.name,
+    //     key: item.name,
+    //     children: [],
+    //   }
+    //   if (item.children && item.children.length) {
+    //     filterCategory(item.children)
+    //   }
+    //   categoryOptions.value.push(category)
+    // } else {
+    //   const category = {
+    //     label: item.name,
+    //     value: item.id,
+    //   }
+    //   categoryOptions.value.push(category)
+    // }
+  })
+}
+
+// 取消编辑
+function modalInvisible(visible = Boolean) {
+  modalVisible.value = visible
+  categoryOptions.value = []
+}
 
 const columns = [
   { type: 'selection', fixed: 'left' },
@@ -226,7 +288,10 @@ const columns = [
             size: 'small',
             type: 'primary',
             secondary: true,
-            onClick: () => handleView(row),
+            onClick: () => {
+              handleView(row)
+              loadingCategory()
+            },
           },
           { default: () => '查看', icon: renderIcon('majesticons:eye-line', { size: 14 }) }
         ),
@@ -236,7 +301,10 @@ const columns = [
             size: 'small',
             type: 'primary',
             style: 'margin-left: 15px;',
-            onClick: () => handleEdit(row),
+            onClick: () => {
+              handleEdit(row)
+              loadingCategory()
+            },
           },
           { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
         ),

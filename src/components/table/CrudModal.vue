@@ -43,13 +43,13 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:visible', 'onSave'])
+const emit = defineEmits(['onSave', 'modalInvisible'])
 const show = computed({
   get() {
     return props.visible
   },
   set(v) {
-    emit('update:visible', v)
+    emit('modalInvisible', v)
   },
 })
 </script>

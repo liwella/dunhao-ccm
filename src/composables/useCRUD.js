@@ -25,9 +25,8 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
   async function handleEdit(row) {
     modalAction.value = 'edit'
     modalVisible.value = true
-    // modalForm.value = { ...row }
-    const data = await doSearch({ id: row.movieId })
-    modalForm.value = { ...data?.data }
+    const result = await doSearch({ id: row.movieId })
+    modalForm.value = { ...result?.data }
   }
 
   /** 查看 */
