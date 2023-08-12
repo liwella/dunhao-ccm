@@ -77,7 +77,7 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
       async confirm() {
         try {
           modalLoading.value = true
-          const data = await doDelete(id)
+          const data = await doDelete({ id })
           $message.success('删除成功')
           modalLoading.value = false
           refresh(data)
