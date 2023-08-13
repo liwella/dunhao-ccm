@@ -75,9 +75,8 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:queryItems', 'onChecked', 'onDataChange'])
+const emit = defineEmits(['onChecked', 'onDataChange', 'resetQueryItems'])
 const loading = ref(false)
-const initQuery = { ...props.queryItems }
 const tableData = ref([])
 const pagination = reactive({ page: 1, pageSize: 10 })
 
@@ -109,11 +108,7 @@ function handleSearch() {
   handleQuery()
 }
 async function handleReset() {
-  const queryItems = { ...props.queryItems }
-  for (const key in queryItems) {
-    queryItems[key] = ''
-  }
-  emit('update:queryItems', { ...queryItems, ...initQuery })
+  emit('resetQueryItems')
   await nextTick()
   pagination.page = 1
   handleQuery()

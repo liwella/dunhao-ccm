@@ -18,6 +18,7 @@
       :get-data="api.pageMovie"
       @on-checked="onChecked"
       @on-data-change="(data) => (tableData = data)"
+      @reset-query-items="resetQueryItems"
     >
       <template #queryBar>
         <QueryBarItem label="片名" :label-width="35">
@@ -211,6 +212,12 @@ const $table = ref(null)
 const tableData = ref([])
 /** QueryBar筛选参数（可选） */
 const queryItems = ref({})
+function resetQueryItems() {
+  for (const key in queryItems.value) {
+    queryItems.value[key] = null
+  }
+  // queryItems.value = {}
+}
 /** 补充参数（可选） */
 const extraParams = ref({})
 
