@@ -15,10 +15,10 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
   const modalForm = ref({ ...initForm })
 
   /** 新增 */
-  function handleAdd() {
+  function handleAdd(params = {}) {
     modalAction.value = 'add'
     modalVisible.value = true
-    modalForm.value = { ...initForm }
+    modalForm.value = { ...params, ...initForm }
   }
 
   /** 修改 */

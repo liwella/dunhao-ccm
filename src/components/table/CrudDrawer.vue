@@ -40,7 +40,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:visible', 'onSave', 'modalInvisible'])
+const emit = defineEmits(['update:visible', 'onSave'])
 const show = computed({
   get() {
     return props.visible

@@ -216,7 +216,6 @@ function resetQueryItems() {
   for (const key in queryItems.value) {
     queryItems.value[key] = null
   }
-  // queryItems.value = {}
 }
 /** 补充参数（可选） */
 const extraParams = ref({})
