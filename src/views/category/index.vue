@@ -65,7 +65,9 @@ function filterData(data = []) {
       label: item.name,
       key: item.id,
       children: [],
-      suffix: () => {
+    }
+    if (item.level === 0) {
+      category.suffix = () => {
         return [
           h(
             NButton,
@@ -84,11 +86,27 @@ function filterData(data = []) {
               size: 'small',
               type: 'error',
               style: 'margin-left: 15px;',
+              onClick: () => {
+                handleDelete([item.id])
+              },
             },
             { default: () => '删除' }
           ),
         ]
-      },
+      }
+    } else {
+      category.suffix = () =>
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'error',
+            onClick: () => {
+              handleDelete([item.id])
+            },
+          },
+          { default: () => '删除' }
+        )
     }
     if (item.children && item.children.length) {
       category.children = filterData(item.children)
@@ -114,7 +132,7 @@ const {
   name: '分类',
   initForm: {},
   doCreate: api.addCategory,
-  doDelete: api.deleteMovie,
+  doDelete: api.deleteCategory,
   doUpdate: api.addOrUpdate,
   doSearch: api.detail,
   refresh: () => fetchData(),

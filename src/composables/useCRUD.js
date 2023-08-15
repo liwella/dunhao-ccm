@@ -1,4 +1,4 @@
-import { isNullOrWhitespace } from '@/utils'
+import { isNullOrWhitespace, isArray } from '@/utils'
 
 const ACTIONS = {
   view: '查看',
@@ -70,14 +70,19 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
   }
 
   /** 删除 */
-  function handleDelete(id, confirmOptions) {
-    if (isNullOrWhitespace(id)) return
+  function handleDelete(idParam, confirmOptions) {
+    if (isNullOrWhitespace(idParam)) return
     $dialog.confirm({
       content: '确定删除？',
       async confirm() {
         try {
           modalLoading.value = true
-          const data = await doDelete({ id })
+          let data = {}
+          if (isArray(idParam)) {
+            data = await doDelete({ ids: idParam })
+          } else {
+            data = await doDelete({ id: idParam })
+          }
           $message.success('删除成功')
           modalLoading.value = false
           refresh(data)
