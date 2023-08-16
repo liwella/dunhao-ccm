@@ -22,11 +22,17 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
   }
 
   /** 修改 */
-  async function handleEdit(row) {
+  async function handleEdit(row, needSearch = true) {
     modalAction.value = 'edit'
     modalVisible.value = true
-    const result = await doSearch({ id: row.movieId })
-    modalForm.value = { ...result?.data }
+    let data = {}
+    if (needSearch) {
+      const result = await doSearch({ id: row.movieId })
+      data = result?.data
+    } else {
+      data = row
+    }
+    modalForm.value = { ...data }
   }
 
   /** 查看 */
