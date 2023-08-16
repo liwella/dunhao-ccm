@@ -239,13 +239,10 @@ const stateOptions = ref([
 ])
 
 // 加载分类选项
-const categoryLoading = ref(false)
 const categoryOptions = ref([])
 async function loadingCategory() {
-  categoryLoading.value = true
   const result = await api.listCategory()
   filterCategory(result?.data)
-  categoryLoading.value = false
 }
 function filterCategory(data = []) {
   data.forEach((item) => {
