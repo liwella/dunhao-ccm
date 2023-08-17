@@ -3,7 +3,7 @@
     <n-card title="映射管理" size="small" :segmented="true" mt-15 rounded-10>
       <template #header-extra>
         <n-select
-          v-model:value="selectSource"
+          v-model:value="selectedSource"
           placeholder="请选择采集源"
           :options="sourceConfigOptions"
           clearable
@@ -12,12 +12,12 @@
         />
       </template>
       <n-space vertical>
-        <n-spin :show="sourceCategoryLoding">
-          <div v-if="selectSource" flex flex-wrap justify-between>
+        <n-spin :show="sourceCategoryLoading">
+          <div v-if="selectedSource" flex flex-wrap justify-between>
             <n-card
               v-for="(item, index) in sourceCategory"
               :key="index"
-              class="mb-10 mt-10 w-200 flex-shrink-0 cursor-pointer"
+              class="mb-10 mr-10 w-200 flex-shrink-0 cursor-pointer"
               hover:card-shadow
               :title="item.type_name"
               size="small"
@@ -82,28 +82,38 @@ async function loadingSourceConfig() {
   })
 }
 // 采集源绑定值
-const selectSource = ref(null)
+const selectedSource = ref(null)
 
-// 获取采集源分类列表事件
-const sourceCategoryLoding = ref(false)
+// 获取采集源分类列表
+const sourceCategoryLoading = ref(false)
 const sourceCategory = ref([])
 async function handleSourceUpdate(value) {
   if (isNullOrUndef(value)) {
     return
   }
-  sourceCategoryLoding.value = true
-  const result = await api.listSourceCategory({ id: value })
-  sourceCategory.value = result?.data
-  sourceCategoryLoding.value = false
+  sourceCategoryLoading.value = true
+  const scList = await api.listSourceCategory({ id: value })
+  const cmList = await api.listCategoryMapping({ sourceId: value })
+  cmList?.data.forEach((item) => {
+    const find = scList?.data.find((sc) => sc.type_id === item.sourceTypeId)
+    if (!isNullOrUndef(find)) {
+      find.categoryId = item.categoryId
+    }
+  })
+  sourceCategory.value = scList?.data
+  sourceCategoryLoading.value = false
 }
 
 // 更新分类映射
 async function handleUpdateMapping(item) {
   item.loading = true
   if (isNullOrUndef(item.categoryId)) {
+    await api.deleteMapping({ sourceId: selectedSource.value, sourceTypeId: item.type_id })
+    item.loading = false
+    return
   }
   const param = {
-    sourceId: selectSource.value,
+    sourceId: selectedSource.value,
     sourceTypeId: item.type_id,
     categoryId: item.categoryId,
   }

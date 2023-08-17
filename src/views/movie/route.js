@@ -45,5 +45,16 @@ export default {
         requireAuth: true,
       },
     },
+    {
+      name: 'detail',
+      path: 'detail/:id',
+      component: () => import('./detail/index.vue'),
+      meta: {
+        title: '影片详情',
+        icon: 'ic:baseline-menu',
+        role: ['admin'],
+        requireAuth: true,
+      },
+    },
   ],
 }

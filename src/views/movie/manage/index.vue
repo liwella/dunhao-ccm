@@ -204,6 +204,7 @@ import { renderIcon } from '@/utils'
 import { useCRUD } from '@/composables'
 import api from './api'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 defineOptions({ name: 'Crud' })
 
@@ -314,10 +315,10 @@ const columns = [
             type: 'primary',
             secondary: true,
             onClick: () => {
-              handleView(row)
+              toWatch(row.movieId)
             },
           },
-          { default: () => '查看', icon: renderIcon('majesticons:eye-line', { size: 14 }) }
+          { default: () => '观看', icon: renderIcon('majesticons:eye-line', { size: 14 }) }
         ),
         h(
           NButton,
@@ -354,6 +355,17 @@ function onChecked(rowKeys) {
   if (rowKeys.length) $message.info(`选中${rowKeys.join(' ')}`)
 }
 
+// 跳转详情页观看影片
+const router = useRouter()
+function toWatch(id) {
+  router.push({
+    name: 'detail',
+    params: {
+      id,
+    },
+  })
+}
+
 const {
   modalVisible,
   modalAction,
@@ -362,7 +374,6 @@ const {
   handleAdd,
   handleDelete,
   handleEdit,
-  handleView,
   handleSave,
   modalForm,
   modalFormRef,
