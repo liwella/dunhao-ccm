@@ -2,9 +2,13 @@
   <CommonPage show-footer title="影片管理">
     <template #action>
       <div>
-        <n-button type="primary" class="ml-16" @click="handleAdd">
+        <n-button type="primary" @click="handleAdd">
           <TheIcon icon="material-symbols:add" :size="18" class="mr-5" />
           新建影片
+        </n-button>
+        <n-button type="error" class="ml-16" @click="batchDelete">
+          <TheIcon icon="material-symbols:cancel-outline-rounded" :size="18" class="mr-5" />
+          批量删除
         </n-button>
       </div>
     </template>
@@ -12,6 +16,7 @@
     <CrudTable
       ref="$table"
       v-model:query-items="queryItems"
+      :row-key="'movieId'"
       :extra-params="extraParams"
       :scroll-x="1200"
       :columns="columns"
@@ -351,8 +356,22 @@ const columns = [
 ]
 
 // 选中事件
+const checked = ref([])
 function onChecked(rowKeys) {
-  if (rowKeys.length) $message.info(`选中${rowKeys.join(' ')}`)
+  if (rowKeys.length) {
+    checked.value = [...rowKeys]
+  } else {
+    checked.value = []
+  }
+}
+// 批量删除选中
+function batchDelete() {
+  if (checked.value.length) {
+    handleDelete(checked.value)
+    checked.value = []
+  } else {
+    $message.error('未选中任何数据')
+  }
 }
 
 // 跳转详情页观看影片
