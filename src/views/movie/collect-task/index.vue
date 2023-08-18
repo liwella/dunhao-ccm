@@ -73,16 +73,29 @@
         :label-width="80"
         :disabled="modalAction === 'view'"
       >
+        <n-form-item label="是否采集全部" :label-width="120">
+          <n-switch v-model:value="activeDuration" />
+        </n-form-item>
         <n-form-item
+          v-if="!activeDuration"
           label="采集时间段"
           path="duration"
+          :label-width="110"
           :rule="{
             required: true,
             message: '请输入采集时间段',
             trigger: 'blur',
+            type: 'number',
           }"
         >
-          <n-input v-model:value="modalForm.duration" placeholder="请输入采集时间段" />
+          <n-input-number
+            v-model:value="modalForm.duration"
+            :min="1"
+            placeholder="采集过去xx天数据"
+            clearable
+            w-full
+            button-placement="both"
+          />
         </n-form-item>
         <n-form-item
           label="采集源"
@@ -128,6 +141,8 @@ function resetQueryItems() {
 }
 /** 补充参数（可选） */
 const extraParams = ref({})
+/** 是否启用采集时间段 */
+const activeDuration = ref(true)
 
 onMounted(() => {
   $table.value?.handleSearch()
