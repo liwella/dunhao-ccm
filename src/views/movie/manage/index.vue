@@ -7,7 +7,7 @@
           新建影片
         </n-button>
         <n-button type="error" class="ml-16" @click="batchDelete">
-          <TheIcon icon="material-symbols:cancel-outline-rounded" :size="18" class="mr-5" />
+          <TheIcon icon="material-symbols:delete-outline" :size="18" class="mr-5" />
           批量删除
         </n-button>
       </div>
@@ -298,7 +298,7 @@ const columns = [
       return h('span', row['updateTime'])
     },
   },
-  { title: '最新集数', key: 'updateInfo', width: 80 },
+  { title: '最新集数', key: 'updateInfo', width: 120 },
   { title: '演员列表', key: 'actorList', width: 150, ellipsis: { tooltip: true } },
   { title: '导演列表', key: 'directorList', width: 150, ellipsis: { tooltip: true } },
   { title: '状态', key: 'state.description', width: 80 },
