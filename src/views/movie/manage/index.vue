@@ -133,19 +133,19 @@
             clearable
           />
         </n-form-item>
-        <n-form-item label="创建时间" path="createTime">
+        <n-form-item label="创建时间" path="createDate">
           <n-date-picker
-            v-model:formatted-value="modalForm.createTime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
+            v-model:formatted-value="modalForm.createDate"
+            value-format="yyyy-MM-dd"
+            type="date"
             clearable
           />
         </n-form-item>
-        <n-form-item label="最后更新时间" path="updateTime">
+        <n-form-item label="最后更新时间" path="updateDate">
           <n-date-picker
-            v-model:formatted-value="modalForm.updateTime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            type="datetime"
+            v-model:formatted-value="modalForm.updateDate"
+            value-format="yyyy-MM-dd"
+            type="date"
             clearable
           />
         </n-form-item>
@@ -283,19 +283,19 @@ const columns = [
   { title: '地区', key: 'mvArea.description', width: 80 },
   { title: '出厂年份', key: 'mvYear', width: 80 },
   {
-    title: '创建时间',
-    key: 'createTime',
+    title: '创建日期',
+    key: 'createDate',
     width: 180,
     render(row) {
-      return h('span', row['createTime'])
+      return h('span', row['createDate'])
     },
   },
   {
-    title: '最后更新时间',
-    key: 'updateTime',
+    title: '最后更新日期',
+    key: 'updateDate',
     width: 180,
     render(row) {
-      return h('span', row['updateTime'])
+      return h('span', row['updateDate'])
     },
   },
   { title: '最新集数', key: 'updateInfo', width: 120 },
