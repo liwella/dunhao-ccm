@@ -10,6 +10,13 @@
       "name": "针对 localhost 启动 Edge",
       "url": "http://localhost:3100",
       "webRoot": "${workspaceFolder}/dunhao-ccm"
+    },
+    {
+      "name": "Docker Node.js Launch",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-run: debug",
+      "platform": "node"
     }
   ]
 }
