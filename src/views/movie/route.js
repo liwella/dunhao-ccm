@@ -13,11 +13,11 @@ export default {
   },
   children: [
     {
-      name: 'movie',
-      path: 'movie',
-      component: () => import('./manage/index.vue'),
+      name: 'sourceConfig',
+      path: 'collect-config',
+      component: () => import('./source-config/index.vue'),
       meta: {
-        title: '影片管理',
+        title: '采集源管理',
         icon: 'ic:baseline-menu',
         role: ['admin'],
         requireAuth: true,
@@ -40,6 +40,17 @@ export default {
       component: () => import('./mapping/index.vue'),
       meta: {
         title: '映射管理',
+        icon: 'ic:baseline-menu',
+        role: ['admin'],
+        requireAuth: true,
+      },
+    },
+    {
+      name: 'movie',
+      path: 'movie',
+      component: () => import('./manage/index.vue'),
+      meta: {
+        title: '影片管理',
         icon: 'ic:baseline-menu',
         role: ['admin'],
         requireAuth: true,

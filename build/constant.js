@@ -17,7 +17,7 @@ export const PROXY_CONFIG = {
    * @转发路径  http://localhost:8080/api/v2/user
    */
   '/dunhao': {
-    target: 'http://1.12.233.74:9000',
+    target: 'http://localhost:9000',
     changeOrigin: true,
   },
   /**
