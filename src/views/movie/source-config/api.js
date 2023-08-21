@@ -1,11 +1,8 @@
 import { serviceRequest } from '@/utils'
 
 export default {
-  listCategory: () => serviceRequest.post('/category/listCategory'),
-  listSourceCategory: (params = {}) => serviceRequest.post('/source/listSourceCategory', params),
-  listCategoryMapping: (params = {}) =>
-    serviceRequest.post('/categoryMapping/listCategoryMapping', params),
-  listSimpleSc: () => serviceRequest.post('/sourceConfig/listSimpleSc'),
-  addOrUpdate: (params = {}) => serviceRequest.post('/categoryMapping/addOrUpdate', params),
-  deleteMapping: (params = {}) => serviceRequest.post('/categoryMapping/delete', params),
+  list: () => serviceRequest.post('/sourceConfig/list'),
+  add: (params = {}) => serviceRequest.post('/sourceConfig/add', params),
+  update: (params = {}) => serviceRequest.post('/sourceConfig/update', params),
+  delete: (params = {}) => serviceRequest.post('/sourceConfig/delete', params),
 }
