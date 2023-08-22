@@ -6,7 +6,7 @@ export default {
   component: Layout,
   meta: {
     title: '账户管理',
-    icon: 'mdi:home',
+    icon: 'ic:baseline-how-to-reg',
     role: ['admin'],
     requireAuth: true,
     order: 7,
@@ -18,7 +18,7 @@ export default {
       component: () => import('./user/index.vue'),
       meta: {
         title: '用户管理',
-        icon: 'ic:baseline-menu',
+        icon: 'ic:outline-how-to-reg',
         role: ['admin'],
         requireAuth: true,
       },
@@ -29,7 +29,7 @@ export default {
       component: () => import('./role/index.vue'),
       meta: {
         title: '角色管理',
-        icon: 'ic:baseline-menu',
+        icon: 'ic:outline-insert-emoticon',
         role: ['admin'],
         requireAuth: true,
       },
@@ -40,7 +40,7 @@ export default {
       component: () => import('./permission/index.vue'),
       meta: {
         title: '权限管理',
-        icon: 'ic:baseline-menu',
+        icon: 'ic:sharp-attachment',
         role: ['admin'],
         requireAuth: true,
       },
