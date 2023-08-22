@@ -1,4 +1,4 @@
-export const OUTPUT_DIR = 'dist'
+export const OUTPUT_DIR = 'dist/ccm'
 
 export const PROXY_CONFIG = {
   development: {

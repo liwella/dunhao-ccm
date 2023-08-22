@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o,aB as r}from"./index-adb153df.js";const c={};function n(t,a){return o(),r("div",null,"用户管理")}const f=e(c,[["render",n]]);export{f as default};
