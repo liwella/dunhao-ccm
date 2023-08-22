@@ -34,8 +34,12 @@
             </n-card>
           </div>
         </n-spin>
+        <n-empty
+          v-if="!selectedSource || sourceCategoryLoading"
+          size="large"
+          description="无数据"
+        ></n-empty>
       </n-space>
-      <div h-10 w-300></div>
     </n-card>
   </AppPage>
 </template>
@@ -90,6 +94,9 @@ const sourceCategory = ref([])
 async function handleSourceUpdate(value) {
   if (isNullOrUndef(value)) {
     return
+  }
+  if (sourceCategory.value) {
+    sourceCategory.value = []
   }
   sourceCategoryLoading.value = true
   const scList = await api.listSourceCategory({ id: value })

@@ -28,8 +28,8 @@ export default defineConfig(({ command, mode }) => {
       open: false,
       proxy: VITE_USE_PROXY
         ? {
-            [VITE_BASE_API]: PROXY_CONFIG[VITE_BASE_API],
-            [VITE_BASE_DUNHAO]: PROXY_CONFIG[VITE_BASE_DUNHAO],
+            [VITE_BASE_API]: PROXY_CONFIG[mode][VITE_BASE_API],
+            [VITE_BASE_DUNHAO]: PROXY_CONFIG[mode][VITE_BASE_DUNHAO],
           }
         : undefined,
     },

@@ -2,9 +2,9 @@
   <AppPage :show-footer="false">
     <n-card title="影片详情" size="small" :segmented="true" mt-15 rounded-10>
       <template #footer>
-        <n-space vertical>
-          <div ref="videoRef"></div>
-        </n-space>
+        <n-el>
+          <div ref="videoRef" m-auto :style="{ width: '70%' }"></div>
+        </n-el>
       </template>
       <template #action>
         <n-spin :show="loading">
