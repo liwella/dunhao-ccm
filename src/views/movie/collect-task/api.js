@@ -7,5 +7,6 @@ export default {
   pauseTask: (params = {}) => serviceRequest.post('/collectTask/pauseCollectTask', params),
   stopTask: (params = {}) => serviceRequest.post('/collectTask/stopCollectTask', params),
   listCollectTaskState: () => serviceRequest.post('/collectTask/listCollectTaskState'),
+  getTaskProcess: (params = {}) => serviceRequest.post('/collectTask/getTaskProcess', params),
   listSimpleSc: () => serviceRequest.post('/sourceConfig/listSimpleSc'),
 }

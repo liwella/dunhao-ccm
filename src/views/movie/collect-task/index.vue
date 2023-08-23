@@ -121,11 +121,11 @@
 </template>
 
 <script setup>
-import { NButton } from 'naive-ui'
+import { NButton, NProgress } from 'naive-ui'
 import { renderIcon } from '@/utils'
 import { useCRUD } from '@/composables'
 import api from './api'
-import { onMounted } from 'vue'
+import { h, onMounted } from 'vue'
 
 defineOptions({ name: 'Crud' })
 
@@ -195,25 +195,76 @@ function updateTime() {
   }
 }
 
-async function handleStart(params) {
-  await api.startCollectTask(params)
-  $message.success('已开始~')
+async function handleStart(row) {
+  const result = await api.startCollectTask({ id: row.id })
+  if (result.code === 200) {
+    $message.success('已开始~')
+    refresh()
+  }
 }
 
-async function handlePause(params) {
-  await api.pauseTask(params)
-  $message.success('已暂停~')
+async function handlePause(row) {
+  const result = await api.pauseTask({ id: row.id })
+  if (result.code === 200) {
+    $message.success('已暂停~')
+    refresh()
+  }
 }
 
-async function handleStop(params) {
-  await api.stopTask(params)
-  $message.success('已停止~')
+async function handleStop(row) {
+  const result = await api.stopTask({ id: row.id })
+  if (result.code === 200) {
+    $message.success('已停止~')
+    refresh()
+  }
 }
 
 const columns = [
   { title: '采集id', key: 'id', width: 80, ellipsis: { tooltip: true } },
-  { title: '采集源名称', key: 'sourceName', width: 150, ellipsis: { tooltip: true } },
-  { title: '采集时间段', key: 'duration', width: 150 },
+  { title: '采集源名称', key: 'sourceName', width: 100, ellipsis: { tooltip: true } },
+  {
+    title: '采集时间段',
+    key: 'duration',
+    width: 100,
+    render(row) {
+      return `过去 ${row.duration} 天`
+    },
+  },
+  {
+    title: '采集进度',
+    key: 'process',
+    width: 150,
+    render(row) {
+      return h(NProgress, {
+        type: 'line',
+        status: (function () {
+          switch (row.state.value) {
+            case 2:
+              return 'warning'
+            case 3:
+              return 'error'
+            case 4:
+              return 'success'
+            default:
+              return 'info'
+          }
+        })(),
+        percentage: row.process,
+        processing: (function () {
+          switch (row.state.value) {
+            case 2:
+            case 3:
+            case 4:
+              return false
+            default:
+              return true
+          }
+        })(),
+        borderRadius: 2,
+      })
+    },
+  },
+  { title: '任务状态', key: 'state.description', width: 80 },
   {
     title: '创建时间',
     key: 'createTime',
@@ -254,8 +305,6 @@ const columns = [
       return h('span', row['finishTime'])
     },
   },
-  { title: '采集进度', key: 'process', width: 80 },
-  { title: '任务状态', key: 'state.description', width: 80 },
   {
     title: '操作',
     key: 'actions',
@@ -270,35 +319,41 @@ const columns = [
           {
             size: 'small',
             type: 'primary',
+            text: true,
             onClick: () => {
-              handleStart({ id: row.id })
+              handleStart(row)
             },
+            disabled: [0, 1, 3, 4].includes(row.state?.value),
           },
-          { default: () => '开始', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
+          { default: () => '', icon: renderIcon('bi:play-btn-fill', { size: 25 }) }
         ),
         h(
           NButton,
           {
             size: 'small',
             type: 'primary',
+            text: true,
             style: 'margin-left: 15px;',
             onClick: () => {
-              handlePause({ id: row.id })
+              handlePause(row)
             },
+            disabled: [2, 3, 4].includes(row.state?.value),
           },
-          { default: () => '暂停', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
+          { default: () => '', icon: renderIcon('bi:pause-btn-fill', { size: 25 }) }
         ),
         h(
           NButton,
           {
             size: 'small',
             type: 'error',
+            text: true,
             style: 'margin-left: 15px;',
             onClick: () => {
-              handleStop({ id: row.id })
+              handleStop(row)
             },
+            disabled: [3, 4].includes(row.state?.value),
           },
-          { default: () => '停止', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
+          { default: () => '', icon: renderIcon('bi:stop-btn-fill', { size: 25 }) }
         ),
       ]
     },
@@ -317,6 +372,7 @@ const {
   modalLoading,
   handleAdd,
   handleSave,
+  refresh,
   modalForm,
   modalFormRef,
 } = useCRUD({

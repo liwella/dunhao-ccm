@@ -110,6 +110,7 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
     handleEdit,
     handleView,
     handleSave,
+    refresh,
     modalForm,
     modalFormRef,
   }
