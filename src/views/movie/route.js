@@ -24,23 +24,23 @@ export default {
       },
     },
     {
-      name: 'collectTask',
-      path: 'collect-task',
-      component: () => import('./collect-task/index.vue'),
-      meta: {
-        title: '采集管理',
-        icon: 'ic:baseline-article',
-        role: ['admin'],
-        requireAuth: true,
-      },
-    },
-    {
       name: 'mapping',
       path: 'mapping',
       component: () => import('./mapping/index.vue'),
       meta: {
         title: '映射管理',
         icon: 'ic:baseline-extension',
+        role: ['admin'],
+        requireAuth: true,
+      },
+    },
+    {
+      name: 'collectTask',
+      path: 'collect-task',
+      component: () => import('./collect-task/index.vue'),
+      meta: {
+        title: '采集管理',
+        icon: 'ic:baseline-article',
         role: ['admin'],
         requireAuth: true,
       },

@@ -285,7 +285,7 @@ const columns = [
   {
     title: '创建日期',
     key: 'createDate',
-    width: 180,
+    width: 120,
     render(row) {
       return h('span', row['createDate'])
     },
@@ -293,7 +293,7 @@ const columns = [
   {
     title: '最后更新日期',
     key: 'updateDate',
-    width: 180,
+    width: 120,
     render(row) {
       return h('span', row['updateDate'])
     },
