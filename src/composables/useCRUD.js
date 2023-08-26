@@ -1,5 +1,3 @@
-import { isNullOrWhitespace, isArray } from '@/utils'
-
 const ACTIONS = {
   view: '查看',
   edit: '编辑',
@@ -16,31 +14,41 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
 
   /** 新增 */
   function handleAdd(params = {}) {
+    modalForm.value = { ...params, ...initForm }
     modalAction.value = 'add'
     modalVisible.value = true
-    modalForm.value = { ...params, ...initForm }
   }
 
   /** 修改 */
-  async function handleEdit(row, needSearch = true) {
-    modalAction.value = 'edit'
-    modalVisible.value = true
+  async function handleEdit(param = {}, needSearch = true) {
+    modalLoading.value = true
     let data = {}
     if (needSearch) {
-      const result = await doSearch({ id: row.movieId })
+      const result = await doSearch({ id: param.id })
       data = result?.data
     } else {
-      data = row
+      data = param
     }
     modalForm.value = { ...data }
+    modalLoading.value = false
+    modalAction.value = 'edit'
+    modalVisible.value = true
   }
 
   /** 查看 */
-  async function handleView(row) {
+  async function handleView(param = {}, needSearch = true) {
+    modalLoading.value = true
+    let data = {}
+    if (needSearch) {
+      const result = await doSearch({ id: param.id })
+      data = result?.data
+    } else {
+      data = param
+    }
+    modalForm.value = { ...data }
+    modalLoading.value = false
     modalAction.value = 'view'
     modalVisible.value = true
-    const data = await doSearch({ id: row.movieId })
-    modalForm.value = { ...data?.data }
   }
 
   /** 保存 */
@@ -76,19 +84,13 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
   }
 
   /** 删除 */
-  function handleDelete(idParam, confirmOptions) {
-    if (isNullOrWhitespace(idParam)) return
+  function handleDelete(param = {}, confirmOptions) {
     $dialog.confirm({
       content: '确定删除？',
       async confirm() {
         try {
           modalLoading.value = true
-          let data = {}
-          if (isArray(idParam)) {
-            data = await doDelete({ ids: idParam })
-          } else {
-            data = await doDelete({ id: idParam })
-          }
+          const data = await doDelete(param)
           $message.success('删除成功')
           modalLoading.value = false
           refresh(data)

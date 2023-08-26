@@ -3,7 +3,7 @@
     <n-card title="分类管理" size="small" :segmented="true" mt-15 rounded-10>
       <template #header-extra>
         <n-button type="primary" @click="handleAdd">新增主分类</n-button>
-        <n-button type="error" ml-20 @click="handleDelete(checkedKeys)">删除</n-button>
+        <n-button type="error" ml-20 @click="handleDelete({ ids: checkedKeys })">删除</n-button>
       </template>
       <n-space vertical>
         <n-spin :show="loading">
@@ -93,7 +93,7 @@ function filterData(data = []) {
           secondary: true,
           style: 'margin-left: 15px;',
           onClick: () => {
-            handleDelete([item.id])
+            handleDelete({ id: item.id })
           },
         },
         { default: () => '删除' }

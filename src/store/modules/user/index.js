@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', {
   actions: {
     async getUserInfo() {
       try {
-        const res = await api.getUser()
+        const res = await api.getLoginUser()
         const { id, username, avatar, role } = res.data
         this.userInfo = { id, name: username, avatar, role: [role.code] }
         return Promise.resolve(res.data)

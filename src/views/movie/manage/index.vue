@@ -332,7 +332,7 @@ const columns = [
             type: 'primary',
             style: 'margin-left: 15px;',
             onClick: () => {
-              handleEdit(row)
+              handleEdit({ id: row.movieId })
             },
           },
           { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
@@ -343,7 +343,7 @@ const columns = [
             size: 'small',
             type: 'error',
             style: 'margin-left: 15px;',
-            onClick: () => handleDelete(row.movieId),
+            onClick: () => handleDelete({ id: row.movieId }),
           },
           {
             default: () => '删除',
@@ -367,7 +367,7 @@ function onChecked(rowKeys) {
 // 批量删除选中
 function batchDelete() {
   if (checked.value.length) {
-    handleDelete(checked.value)
+    handleDelete({ ids: checked.value })
     checked.value = []
   } else {
     $message.error('未选中任何数据')

@@ -227,7 +227,10 @@ const columns = [
     key: 'duration',
     width: 100,
     render(row) {
-      return `过去 ${row.duration} 天`
+      if (row.duration) {
+        return `过去 ${row.duration} 天`
+      }
+      return '全部'
     },
   },
   {

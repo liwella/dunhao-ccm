@@ -149,7 +149,7 @@ function onChecked(rowKeys) {
 // 批量删除选中
 function batchDelete() {
   if (checked.value.length) {
-    handleDelete(checked.value)
+    handleDelete({ ids: checked.value })
     checked.value = []
   } else {
     $message.error('未选中任何数据')
@@ -189,7 +189,7 @@ const columns = [
             type: 'error',
             style: 'margin-left: 15px;',
             onClick: () => {
-              handleDelete([row.id])
+              handleDelete({ ids: [row.id] })
             },
           },
           {
