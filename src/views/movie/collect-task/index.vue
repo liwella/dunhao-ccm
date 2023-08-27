@@ -311,7 +311,7 @@ const columns = [
   {
     title: '操作',
     key: 'actions',
-    width: 280,
+    width: 180,
     align: 'center',
     fixed: 'right',
     hideInExcel: true,

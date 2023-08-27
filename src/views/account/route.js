@@ -39,7 +39,7 @@ export default {
       path: 'permission',
       component: () => import('./permission/index.vue'),
       meta: {
-        title: '权限管理',
+        title: '菜单管理',
         icon: 'ic:sharp-attachment',
         role: ['admin'],
         requireAuth: true,

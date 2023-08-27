@@ -14,7 +14,7 @@ export default {
   children: [
     {
       name: 'sourceConfig',
-      path: 'collect-config',
+      path: 'source-config',
       component: () => import('./source-config/index.vue'),
       meta: {
         title: '采集源管理',

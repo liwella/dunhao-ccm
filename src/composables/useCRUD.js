@@ -21,7 +21,6 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
 
   /** 修改 */
   async function handleEdit(param = {}, needSearch = true) {
-    modalLoading.value = true
     let data = {}
     if (needSearch) {
       const result = await doSearch({ id: param.id })
@@ -30,14 +29,12 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
       data = param
     }
     modalForm.value = { ...data }
-    modalLoading.value = false
     modalAction.value = 'edit'
     modalVisible.value = true
   }
 
   /** 查看 */
   async function handleView(param = {}, needSearch = true) {
-    modalLoading.value = true
     let data = {}
     if (needSearch) {
       const result = await doSearch({ id: param.id })
@@ -46,7 +43,6 @@ export default function ({ name, initForm = {}, doCreate, doDelete, doUpdate, do
       data = param
     }
     modalForm.value = { ...data }
-    modalLoading.value = false
     modalAction.value = 'view'
     modalVisible.value = true
   }
