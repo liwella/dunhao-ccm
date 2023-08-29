@@ -68,6 +68,22 @@
         </n-form-item>
       </n-form>
     </CrudDrawer>
+    <CrudDrawer
+      v-model:visible="tModalVisible"
+      :title="tModalTitle"
+      :loading="tModalLoading"
+      :show-footer="tModalAction !== 'view'"
+      @on-save="updateRoleMenu"
+    >
+      <n-tree
+        v-model:checked-keys="checkedKeys"
+        :data="permissionData"
+        checkable
+        selectable
+        block-line
+        default-expand-all
+      ></n-tree>
+    </CrudDrawer>
   </CommonPage>
 </template>
 
@@ -80,7 +96,60 @@ import { renderIcon } from '@/utils'
 const $table = ref(null)
 onMounted(() => {
   $table.value.handleSearch()
+  fetchPermissionData()
 })
+// 获取权限列表
+const permissionData = ref([])
+const loading = ref(false)
+async function fetchPermissionData() {
+  loading.value = true
+  permissionData.value = []
+  const result = await api.listMenu()
+  const ret = filterPermissionData(result.data)
+  permissionData.value = ret
+  loading.value = false
+}
+function filterPermissionData(data = []) {
+  const ret = []
+  data.forEach((item) => {
+    const permission = {
+      label: item.menuName + ' / ' + item.permission,
+      key: item.id,
+      children: [],
+    }
+    if (item.children && item.children.length) {
+      permission.children = filterPermissionData(item.children)
+    }
+    ret.push(permission)
+  })
+  return ret
+}
+// 获取角色权限（回显）
+const checkedKeys = ref([])
+async function fetchRoleMenu(roleId) {
+  checkedKeys.value = []
+  const result = await api.listRoleMenu({ id: roleId })
+  result?.data.forEach((item) => {
+    checkedKeys.value.push(item.menuId)
+  })
+}
+// 更新角色权限
+async function updateRoleMenu() {
+  tModalForm.value.menuIds = checkedKeys.value
+  if (!['edit', 'add'].includes(tModalAction.value)) {
+    tModalVisible.value = false
+    return
+  }
+  try {
+    tModalLoading.value = true
+    const data = await api.updateRoleMenu(tModalForm.value)
+    $message.success('编辑成功')
+    tModalLoading.value = tModalVisible.value = false
+    data && $table.value?.handleSearch()
+  } catch (error) {
+    modalLoading.value = false
+  }
+}
 
 // 查询参数
 const queryItems = ref({})
@@ -138,7 +207,10 @@ const columns = [
             size: 'small',
             type: 'primary',
             style: 'margin-left: 15px;',
-            onClick: () => {},
+            onClick: () => {
+              fetchRoleMenu(row.id)
+              tHandleEdit({ roleId: row.id }, false)
+            },
           },
           { default: () => '编辑权限', icon: renderIcon('ic:baseline-vpn-key', { size: 14 }) }
         ),
@@ -179,6 +251,23 @@ const {
   doCreate: api.addRole,
   doDelete: api.deleteRole,
   doUpdate: api.updateRole,
+  doSearch: null,
+  refresh: () => $table.value?.handleSearch(),
+})
+
+const {
+  modalVisible: tModalVisible,
+  modalTitle: tModalTitle,
+  modalLoading: tModalLoading,
+  modalAction: tModalAction,
+  handleEdit: tHandleEdit,
+  modalForm: tModalForm,
+} = useCRUD({
+  name: '角色权限',
+  initForm: {},
+  doCreate: null,
+  doDelete: null,
+  doUpdate: api.updateRoleMenu,
   doSearch: null,
   refresh: () => $table.value?.handleSearch(),
 })
