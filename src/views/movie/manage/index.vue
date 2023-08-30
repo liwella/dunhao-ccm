@@ -208,7 +208,7 @@ import { NButton } from 'naive-ui'
 import { renderIcon } from '@/utils'
 import { useCRUD } from '@/composables'
 import api from './api'
-import { onMounted } from 'vue'
+import { onMounted, resolveDirective, withDirectives } from 'vue'
 import { useRouter } from 'vue-router'
 
 defineOptions({ name: 'Crud' })
@@ -276,6 +276,7 @@ async function loadingArea() {
   })
 }
 
+const permission = resolveDirective('permission')
 const columns = [
   { type: 'selection', fixed: 'left' },
   { title: '影片名称', key: 'mvName', width: 150, ellipsis: { tooltip: true } },
@@ -337,18 +338,21 @@ const columns = [
           },
           { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
         ),
-        h(
-          NButton,
-          {
-            size: 'small',
-            type: 'error',
-            style: 'margin-left: 15px;',
-            onClick: () => handleDelete({ id: row.movieId }),
-          },
-          {
-            default: () => '删除',
-            icon: renderIcon('material-symbols:delete-outline', { size: 14 }),
-          }
+        withDirectives(
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'error',
+              style: 'margin-left: 15px;',
+              onClick: () => handleDelete({ id: row.movieId }),
+            },
+            {
+              default: () => '删除',
+              icon: renderIcon('material-symbols:delete-outline', { size: 14 }),
+            }
+          ),
+          [[permission, 'deleteMovie']]
         ),
       ]
     },

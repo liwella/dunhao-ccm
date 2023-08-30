@@ -9,6 +9,7 @@ import { setupRouter } from '@/router'
 import { setupStore } from '@/store'
 import App from './App.vue'
 import { setupNaiveDiscreteApi } from './utils'
+import directive from '@/plugins/directive'
 
 async function setupApp() {
   const app = createApp(App)
@@ -17,6 +18,7 @@ async function setupApp() {
   setupNaiveDiscreteApi()
 
   await setupRouter(app)
+  app.use(directive)
 
   app.mount('#app')
 }
