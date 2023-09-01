@@ -6,7 +6,7 @@ export default {
   component: Layout,
   redirect: '/category/work',
   meta: {
-    role: ['admin'],
+    role: ['admin', 'vip', 'user'],
     requireAuth: true,
     order: 6,
   },

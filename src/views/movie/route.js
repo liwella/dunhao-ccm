@@ -1,14 +1,12 @@
 const Layout = () => import('@/layout/index.vue')
 
 export default {
-  name: 'cinema',
-  path: '/cinema',
+  name: 'movie',
+  path: '/movie',
   component: Layout,
   meta: {
     title: '影视管理',
     icon: 'ic:baseline-album',
-    role: ['admin'],
-    requireAuth: true,
     order: 5,
   },
   children: [
@@ -46,13 +44,13 @@ export default {
       },
     },
     {
-      name: 'movie',
-      path: 'movie',
+      name: 'manage',
+      path: 'manage',
       component: () => import('./manage/index.vue'),
       meta: {
         title: '影片管理',
         icon: 'ic:outline-duo',
-        role: ['admin'],
+        role: ['admin', 'vip', 'user', 'visitor'],
         requireAuth: true,
       },
     },
@@ -63,7 +61,7 @@ export default {
       meta: {
         title: '影片详情',
         icon: 'ic:baseline-camera',
-        role: ['admin'],
+        role: ['admin', 'vip', 'user', 'visitor'],
         requireAuth: true,
       },
     },
