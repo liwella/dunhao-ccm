@@ -143,6 +143,11 @@ function batchDelete() {
   }
 }
 
+async function moveMenu(params = {}) {
+  await api.moveMenu(params)
+  $table.value.handleSearch()
+}
+
 const columns = [
   { type: 'selection', fixed: 'left' },
   { title: '菜单/权限名称', key: 'menuName', width: 120, ellipsis: { tooltip: true } },
@@ -165,24 +170,26 @@ const columns = [
             size: 'small',
             type: 'primary',
             style: 'margin-right: 15px;',
+            text: true,
             onClick: () => {
               handleEdit(row, false)
             },
           },
-          { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
+          { default: () => '', icon: renderIcon('material-symbols:edit-outline', { size: 20 }) }
         ),
         h(
           NButton,
           {
             size: 'small',
             type: 'error',
+            text: true,
             onClick: () => {
               handleDelete({ ids: [row.id] })
             },
           },
           {
-            default: () => '删除',
-            icon: renderIcon('material-symbols:delete-outline', { size: 14 }),
+            default: () => '',
+            icon: renderIcon('material-symbols:delete-outline', { size: 20 }),
           }
         ),
       ]
@@ -194,16 +201,46 @@ const columns = [
               size: 'small',
               type: 'primary',
               style: 'margin-right: 15px',
+              text: true,
               onClick: () => {
                 handleAdd({ parentId: row.id })
               },
             },
             {
-              default: () => '新增',
-              icon: renderIcon('material-symbols:add-notes-outline-rounded', { size: 14 }),
+              default: () => '',
+              icon: renderIcon('material-symbols:add-notes-outline-rounded', { size: 22 }),
             }
           )
         )
+      }
+      if (row.level !== 3) {
+        result.push([
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'primary',
+              text: true,
+              style: 'margin-left: 15px;',
+              onClick: () => {
+                moveMenu({ id: row.id, up: true })
+              },
+            },
+            { default: () => '', icon: renderIcon('material-symbols:arrow-upward', { size: 20 }) }
+          ),
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'primary',
+              text: true,
+              onClick: () => {
+                moveMenu({ id: row.id, up: false })
+              },
+            },
+            { default: () => '', icon: renderIcon('material-symbols:arrow-downward', { size: 20 }) }
+          ),
+        ])
       }
       return result
     },

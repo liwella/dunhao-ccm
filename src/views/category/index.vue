@@ -77,26 +77,26 @@ function filterData(data = []) {
         {
           size: 'small',
           type: 'primary',
-          secondary: true,
+          text: true,
           style: 'margin-left: 15px;',
           onClick: () => {
             handleEdit({ parent: item.id, name: item.name }, false)
           },
         },
-        { default: () => '修改' }
+        { default: () => '', icon: renderIcon('material-symbols:edit-outline', { size: 20 }) }
       ),
       h(
         NButton,
         {
           size: 'small',
           type: 'error',
-          secondary: true,
+          text: true,
           style: 'margin-left: 15px;',
           onClick: () => {
             handleDelete({ id: item.id })
           },
         },
-        { default: () => '删除' }
+        { default: () => '', icon: renderIcon('material-symbols:delete-outline', { size: 20 }) }
       ),
       h(
         NButton,
@@ -137,12 +137,15 @@ function filterData(data = []) {
             {
               size: 'small',
               type: 'primary',
-              secondary: true,
+              text: true,
               onClick: () => {
                 handleAdd({ parent: item.id })
               },
             },
-            { default: () => '新增' }
+            {
+              default: () => '',
+              icon: renderIcon('material-symbols:add-notes-outline-rounded', { size: 22 }),
+            }
           ),
           ...buttons,
         ]
