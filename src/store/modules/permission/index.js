@@ -1,31 +1,73 @@
 import { defineStore } from 'pinia'
 import { asyncRoutes, basicRoutes } from '@/router/routes'
+const Layout = () => import('@/layout/index.vue')
+import api from '@/api'
 
-function hasPermission(route, role) {
-  // * 不需要权限直接返回true
-  if (!route.meta?.requireAuth) return true
+// function hasPermission(route, role) {
+//   // * 不需要权限直接返回true
+//   if (!route.meta?.requireAuth) return true
 
-  const routeRole = route.meta?.role ? route.meta.role : []
+//   const routeRole = route.meta?.role ? route.meta.role : []
 
-  // * 登录用户没有角色或者路由没有设置角色判定为没有权限
-  if (!role.length || !routeRole.length) return false
+//   // * 登录用户没有角色或者路由没有设置角色判定为没有权限
+//   if (!role.length || !routeRole.length) return false
 
-  // * 路由指定的角色包含任一登录用户角色则判定有权限
-  return role.some((item) => routeRole.includes(item))
-}
+//   // * 路由指定的角色包含任一登录用户角色则判定有权限
+//   return role.some((item) => routeRole.includes(item))
+// }
 
-function filterAsyncRoutes(routes = [], role) {
+// function filterAsyncRoutes(routes = [], role) {
+//   const ret = []
+//   routes.forEach((route) => {
+//     if (hasPermission(route, role)) {
+//       const curRoute = {
+//         ...route,
+//         children: [],
+//       }
+//       if (route.children && route.children.length) {
+//         curRoute.children = filterAsyncRoutes(route.children, role)
+//       } else {
+//         Reflect.deleteProperty(curRoute, 'children')
+//       }
+//       ret.push(curRoute)
+//     }
+//   })
+//   return ret
+// }
+
+function transferMenuToRoutes(menus = []) {
   const ret = []
-  routes.forEach((route) => {
-    if (hasPermission(route, role)) {
+  menus.forEach((menu) => {
+    const { menuName, url, permission, level, type, icon, children, sort } = menu
+    if (type.value === 3) {
+      return
+    }
+    // 0级菜单，需要组织布局
+    if (level === 0 && type.value === 1) {
       const curRoute = {
-        ...route,
-        children: [],
+        name: permission,
+        path: url,
+        component: Layout,
+        meta: { order: sort },
+        redirect: url + '/work',
+        children: [
+          {
+            name: permission + '.work',
+            path: 'work',
+            component: getComponent(url, type),
+            meta: { title: menuName, icon: icon, order: sort },
+          },
+        ],
       }
-      if (route.children && route.children.length) {
-        curRoute.children = filterAsyncRoutes(route.children, role)
-      } else {
-        Reflect.deleteProperty(curRoute, 'children')
+      ret.push(curRoute)
+    } else {
+      // 目录和二级菜单
+      const curRoute = {
+        name: permission,
+        path: url,
+        component: getComponent(url, type),
+        meta: { title: menuName, icon: icon, order: sort },
+        children: children?.length !== 0 ? transferMenuToRoutes(children) : [],
       }
       ret.push(curRoute)
     }
@@ -33,75 +75,17 @@ function filterAsyncRoutes(routes = [], role) {
   return ret
 }
 
-// function transferMenuToRoutes(menus = []) {
-//   const ret = []
-//   menus.forEach((menu) => {
-//     const { menuName, url, permission, type, icon, children } = menu
-//     if (type.value === 3) {
-//       return
-//     }
-//     const curRoute = {
-//       name: permission,
-//       path: url,
-//       component: getComponent(url, type),
-//       meta: {
-//         title: menuName,
-//         icon: icon,
-//         requireAuth: true,
-//       },
-//       children: children?.length !== 0 ? transferMenuToRoutes(children) : [],
-//     }
-//     ret.push(curRoute)
-//   })
-//   return ret
-// }
-
-// function transferMenuToRoutes(menus = []) {
-//   const ret = []
-//   menus.forEach((menu) => {
-//     const { menuName, url, permission, level, type, icon, children } = menu
-//     if (type.value === 3) {
-//       return
-//     }
-//     const curRoute = new Object()
-//     if (level === 0 && type.value === 1) {
-//       curRoute.name = permission
-//       curRoute.path = url
-//       curRoute.component = () => import('@/layout/index.vue')
-//       curRoute.redirect = url + '/work'
-//       const child = {}
-//       child.name = permission + '.work'
-//       child.url = 'work'
-//       child.component = getComponent(url, type)
-//       const meta = {}
-//       meta.title = menuName
-//       meta.icon = icon
-//       meta.order = 0
-//       child.meta = meta
-//       curRoute.children = [child]
-//     } else {
-//       curRoute.name = permission
-//       curRoute.path = url
-//       curRoute.component = getComponent(url, type)
-//       const meta = {}
-//       meta.title = menuName
-//       meta.icon = icon
-//       meta.requireAuth = true
-//       curRoute.meta = meta
-//       curRoute.children = children?.length !== 0 ? transferMenuToRoutes(children) : []
-//     }
-//     ret.push(curRoute)
-//   })
-//   return ret
-// }
-
-// function getComponent(url, type) {
-//   if (type.value === 2) {
-//     return () => import('@/layout/index.vue')
-//   } else if (type.value === 1) {
-//     return () => defineAsyncComponent(() => import(/* @vite-ignore */ `@/views${url}/index.vue`))
-//   }
-// }
+function getComponent(url, type) {
+  if (type.value === 2) {
+    return Layout
+  } else if (type.value === 1) {
+    if (url.includes(':')) {
+      url = url.split(':')[0]
+    }
+    const component = asyncRoutes[`/src/views${url}/index.vue`]
+    return component
+  }
+}
 
 export const usePermissionStore = defineStore('permission', {
   state() {
@@ -118,13 +102,19 @@ export const usePermissionStore = defineStore('permission', {
     },
   },
   actions: {
-    generateRoutes(role = []) {
-      const accessRoutes = filterAsyncRoutes(asyncRoutes, role)
+    async generateRoutes() {
+      // const accessRoutes = filterAsyncRoutes(asyncRoutes, role)
+      const menus = await this.listUserMenu()
+      const accessRoutes = transferMenuToRoutes(menus)
       this.accessRoutes = accessRoutes
       return accessRoutes
     },
     resetPermission() {
       this.$reset()
+    },
+    async listUserMenu() {
+      const result = await api.listUserMenu()
+      return result?.data
     },
   },
 })

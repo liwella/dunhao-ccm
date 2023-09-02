@@ -39,9 +39,9 @@ export async function addDynamicRoutes() {
   // 有token的情况
   try {
     const userStore = useUserStore()
-    const permissionStore = usePermissionStore()
     !userStore.userId && (await userStore.getUserInfo())
-    const accessRoutes = permissionStore.generateRoutes(userStore.role)
+    const permissionStore = usePermissionStore()
+    const accessRoutes = await permissionStore.generateRoutes()
     accessRoutes.forEach((route) => {
       !router.hasRoute(route.name) && router.addRoute(route)
     })
