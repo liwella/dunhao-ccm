@@ -1,0 +1,10 @@
+version: '3'
+services:
+  dunhao-ccm:
+    image: registry.cn-hangzhou.aliyuncs.com/li_namespace/dunhao-ccm:0.0.2
+    ports:
+      - "9005:3200"
+    container_name: dunhao-ccm
+    volumes:
+      - /opt/app/ccm/config/default.conf:/etc/nginx/conf.d/default.conf
+    privileged: true

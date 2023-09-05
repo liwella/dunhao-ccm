@@ -1,5 +1,9 @@
 export const basicRoutes = [
   {
+    path: '/',
+    redirect: '/workbench',
+  },
+  {
     name: '404',
     path: '/404',
     component: () => import('@/views/error-page/404.vue'),
