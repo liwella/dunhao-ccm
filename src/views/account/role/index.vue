@@ -73,11 +73,11 @@
       :title="tModalTitle"
       :loading="tModalLoading"
       :show-footer="tModalAction !== 'view'"
-      @on-save="updateRoleMenu"
+      @on-save="drawerUpdate"
     >
       <n-tree
         v-model:checked-keys="checkedKeys"
-        :data="permissionData"
+        :data="drawerData"
         checkable
         selectable
         block-line
@@ -97,7 +97,27 @@ const $table = ref(null)
 onMounted(() => {
   $table.value.handleSearch()
   fetchPermissionData()
+  fetchCategoryData()
 })
+
+const drawerData = ref([])
+const drawerDataType = ref(1)
+function changeDrawerDataType(dataType = 1) {
+  drawerDataType.value = dataType
+  if (dataType === 1) {
+    drawerData.value = permissionData.value
+  } else {
+    drawerData.value = categoryData.value
+  }
+}
+async function drawerUpdate() {
+  if (drawerDataType.value === 1) {
+    await updateRoleMenu()
+  } else {
+    await updateRoleCategory()
+  }
+}
+
 // 获取权限列表
 const permissionData = ref([])
 const loading = ref(false)
@@ -151,6 +171,55 @@ async function updateRoleMenu() {
   }
 }
 
+// 获取菜单列表
+const categoryData = ref([])
+async function fetchCategoryData() {
+  categoryData.value = []
+  const result = await api.listCategory()
+  const ret = filterCategoryData(result.data)
+  categoryData.value = ret
+}
+function filterCategoryData(data = []) {
+  const ret = []
+  data.forEach((item) => {
+    const category = {
+      label: item.name,
+      key: item.id,
+      children: [],
+    }
+    if (item.children && item.children.length) {
+      category.children = filterCategoryData(item.children)
+    }
+    ret.push(category)
+  })
+  return ret
+}
+// 获取角色菜单
+async function fetchRoleCategory(roleId) {
+  checkedKeys.value = []
+  const result = await api.listRoleCategory({ id: roleId })
+  result?.data.forEach((item) => {
+    checkedKeys.value.push(item.categoryId)
+  })
+}
+// 更新角色菜单
+async function updateRoleCategory() {
+  tModalForm.value.categoryIds = checkedKeys.value
+  if (!['edit', 'add'].includes(tModalAction.value)) {
+    tModalVisible.value = false
+    return
+  }
+  try {
+    tModalLoading.value = true
+    const data = await api.updateRoleCategory(tModalForm.value)
+    $message.success('编辑成功')
+    tModalLoading.value = tModalVisible.value = false
+    data && $table.value?.handleSearch()
+  } catch (error) {
+    modalLoading.value = false
+  }
+}
+
 // 查询参数
 const queryItems = ref({})
 function resetQueryItems() {
@@ -184,7 +253,7 @@ const columns = [
   {
     title: '操作',
     key: 'actions',
-    width: 200,
+    width: 280,
     align: 'center',
     fixed: 'right',
     hideInExcel: true,
@@ -208,11 +277,26 @@ const columns = [
             type: 'primary',
             style: 'margin-left: 15px;',
             onClick: () => {
+              changeDrawerDataType(1)
               fetchRoleMenu(row.id)
               tHandleEdit({ roleId: row.id }, false)
             },
           },
-          { default: () => '编辑权限', icon: renderIcon('ic:baseline-vpn-key', { size: 14 }) }
+          { default: () => '角色权限', icon: renderIcon('ic:baseline-vpn-key', { size: 14 }) }
+        ),
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'primary',
+            style: 'margin-left: 15px;',
+            onClick: () => {
+              changeDrawerDataType(2)
+              fetchRoleCategory(row.id)
+              tHandleEdit({ roleId: row.id }, false)
+            },
+          },
+          { default: () => '角色菜单', icon: renderIcon('ic:baseline-vpn-key', { size: 14 }) }
         ),
         h(
           NButton,
