@@ -35,10 +35,11 @@ import api from '@/api'
 //   return ret
 // }
 
-function transferMenuToRoutes(menus = []) {
-  const ret = []
+function transferMenuToRoutes(menus = [], resultPermissions = []) {
+  const routes = []
   menus.forEach((menu) => {
     const { menuName, url, permission, level, type, icon, children, sort } = menu
+    resultPermissions.push(permission)
     if (type.value === 3) {
       return
     }
@@ -59,7 +60,7 @@ function transferMenuToRoutes(menus = []) {
           },
         ],
       }
-      ret.push(curRoute)
+      routes.push(curRoute)
     } else {
       // 目录和二级菜单
       const curRoute = {
@@ -67,12 +68,12 @@ function transferMenuToRoutes(menus = []) {
         path: url,
         component: getComponent(url, type),
         meta: { title: menuName, icon: icon, order: sort },
-        children: children?.length !== 0 ? transferMenuToRoutes(children) : [],
+        children: children?.length !== 0 ? transferMenuToRoutes(children, resultPermissions) : [],
       }
-      ret.push(curRoute)
+      routes.push(curRoute)
     }
   })
-  return ret
+  return routes
 }
 
 function getComponent(url, type) {
@@ -91,6 +92,7 @@ export const usePermissionStore = defineStore('permission', {
   state() {
     return {
       accessRoutes: [],
+      accessPermissions: [],
     }
   },
   getters: {
@@ -105,8 +107,10 @@ export const usePermissionStore = defineStore('permission', {
     async generateRoutes() {
       // const accessRoutes = filterAsyncRoutes(asyncRoutes, role)
       const menus = await this.listUserMenu()
-      const accessRoutes = transferMenuToRoutes(menus)
+      const accessPermissions = []
+      const accessRoutes = transferMenuToRoutes(menus, accessPermissions)
       this.accessRoutes = accessRoutes
+      this.accessPermissions = accessPermissions
       return accessRoutes
     },
     resetPermission() {

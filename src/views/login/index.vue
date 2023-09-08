@@ -35,12 +35,17 @@
           />
         </div>
 
-        <div mt-20>
-          <n-checkbox
-            :checked="isRemember"
-            label="记住我"
-            :on-update:checked="(val) => (isRemember = val)"
-          />
+        <div mt-20 flex flex-row flex-justify-between>
+          <div>
+            <n-checkbox
+              :checked="isRemember"
+              label="记住我"
+              :on-update:checked="(val) => (isRemember = val)"
+            />
+          </div>
+          <div>
+            <n-button type="primary" text="true" @click="visitorLogin()">游客登录</n-button>
+          </div>
         </div>
 
         <div mt-20>
@@ -86,6 +91,12 @@ function initLoginInfo() {
     loginInfo.value.name = localLoginInfo.name || ''
     loginInfo.value.password = localLoginInfo.password || ''
   }
+}
+
+async function visitorLogin() {
+  loginInfo.value.name = 'visitor'
+  loginInfo.value.password = 'qwer1234'
+  await handleLogin()
 }
 
 const isRemember = useStorage('isRemember', false)

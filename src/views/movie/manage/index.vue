@@ -2,11 +2,11 @@
   <CommonPage show-footer title="影片管理">
     <template #action>
       <div>
-        <n-button type="primary" @click="handleAdd">
+        <n-button v-permission="'addMovie'" type="primary" @click="handleAdd">
           <TheIcon icon="material-symbols:add" :size="18" class="mr-5" />
           新建影片
         </n-button>
-        <n-button type="error" class="ml-16" @click="batchDelete">
+        <n-button v-permission="'deleteMovie'" type="error" class="ml-16" @click="batchDelete">
           <TheIcon icon="material-symbols:delete-outline" :size="18" class="mr-5" />
           批量删除
         </n-button>
@@ -326,17 +326,23 @@ const columns = [
           },
           { default: () => '观看', icon: renderIcon('majesticons:eye-line', { size: 14 }) }
         ),
-        h(
-          NButton,
-          {
-            size: 'small',
-            type: 'primary',
-            style: 'margin-left: 15px;',
-            onClick: () => {
-              handleEdit({ id: row.movieId })
+        withDirectives(
+          h(
+            NButton,
+            {
+              size: 'small',
+              type: 'primary',
+              style: 'margin-left: 15px;',
+              onClick: () => {
+                handleEdit({ id: row.movieId })
+              },
             },
-          },
-          { default: () => '编辑', icon: renderIcon('material-symbols:edit-outline', { size: 14 }) }
+            {
+              default: () => '编辑',
+              icon: renderIcon('material-symbols:edit-outline', { size: 14 }),
+            }
+          ),
+          [[permission, 'updateMovie']]
         ),
         withDirectives(
           h(
