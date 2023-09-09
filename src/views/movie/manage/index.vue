@@ -247,7 +247,7 @@ const stateOptions = ref([
 // 加载分类选项
 const categoryOptions = ref([])
 async function loadingCategory() {
-  const result = await api.listCategory()
+  const result = await api.listUserCategory()
   filterCategory(result?.data)
 }
 function filterCategory(data = []) {

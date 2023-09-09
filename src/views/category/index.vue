@@ -63,7 +63,7 @@ const categoryData = ref([])
 const loading = ref(false)
 async function fetchData() {
   loading.value = true
-  const result = await api.listCategory()
+  const result = await api.listUserCategory()
   const ret = filterData(result.data)
   categoryData.value = ret
   loading.value = false

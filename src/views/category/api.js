@@ -1,7 +1,7 @@
 import { serviceRequest } from '@/utils'
 
 export default {
-  listCategory: () => serviceRequest.post('/category/listCategory'),
+  listUserCategory: () => serviceRequest.post('/category/listUserCategory'),
   addCategory: (params = {}) => serviceRequest.post('/category/addCategory', params),
   updateCategory: (params = {}) => serviceRequest.post('/category/updateCategory', params),
   moveCategory: (params = {}) => serviceRequest.post('/category/moveCategory', params),

@@ -5,6 +5,6 @@ export default {
   detail: (params = {}) => serviceRequest.post('/movie/detail', params),
   addOrUpdate: (params = {}) => serviceRequest.post('/movie/addOrUpdate', params),
   deleteMovie: (params = {}) => serviceRequest.post('/movie/deleteMovie', params),
-  listCategory: () => serviceRequest.post('/category/listCategory'),
+  listUserCategory: () => serviceRequest.post('/category/listUserCategory'),
   listArea: () => serviceRequest.post('/movie/listArea'),
 }
