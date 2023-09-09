@@ -57,6 +57,8 @@ function transferMenuToRoutes(menus = [], resultPermissions = []) {
             path: 'work',
             component: getComponent(url, type),
             meta: { title: menuName, icon: icon, order: sort },
+            children:
+              children?.length !== 0 ? transferMenuToRoutes(children, resultPermissions) : [],
           },
         ],
       }
