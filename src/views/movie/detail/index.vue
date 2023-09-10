@@ -2,9 +2,25 @@
   <AppPage :show-footer="false">
     <n-card title="影片详情" size="small" :segmented="true" mt-15 rounded-10>
       <template #footer>
-        <n-el>
-          <div ref="videoRef" m-auto :style="{ width: '70%' }"></div>
-        </n-el>
+        <div flex flex-row justify-center>
+          <n-el v-if="playerType === 1" :style="{ width: '70%' }">
+            <div ref="videoRef"></div>
+          </n-el>
+          <n-el v-if="playerType === 2" :style="{ width: '70%' }">
+            <div>
+              <iframe
+                :src="src"
+                frameborder="0"
+                scrolling="no"
+                referrerpolicy="origin-when-cross-origin"
+                allowfullscreen="true"
+                security="restricted"
+                sandbox="allow-same-origin allow-forms allow-scripts"
+                :style="{ width: '100%', height: '450px' }"
+              ></iframe>
+            </div>
+          </n-el>
+        </div>
       </template>
       <template #action>
         <n-spin :show="loading">
@@ -30,7 +46,7 @@
                 secondary
                 mb-20
                 mr-20
-                @click="changeMovie(source.playUrl)"
+                @click="changeMovie(item.player, source.playUrl)"
               >
                 {{ source.playTag }}
               </n-button>
@@ -48,13 +64,17 @@ import DPlayer from 'dplayer'
 import { onMounted } from 'vue'
 import Hls from 'hls.js'
 import api from './api'
+import { isWhitespace } from '~/src/utils'
 
 onMounted(() => {
   createPlayer()
   createPlaylist()
 })
 
-// 创建播放器
+// 使用播放器类型
+const playerType = ref(1)
+
+// 创建dp播放器
 const dp = ref()
 const videoRef = ref()
 function createPlayer() {
@@ -74,9 +94,19 @@ function createPlayer() {
     },
   })
 }
-// 选择影片
+
+// 第三方播放器链接
+const src = ref('')
+
+// 选择影片和播放器
 const movie = ref({})
-function changeMovie(url) {
+function changeMovie(player, url) {
+  if (!isWhitespace(player)) {
+    playerType.value = 2
+    src.value = player + url
+    return
+  }
+  playerType.value = 1
   dp.value.switchVideo({
     url,
     type: 'customHls',

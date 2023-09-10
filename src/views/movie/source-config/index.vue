@@ -84,6 +84,9 @@
         >
           <n-input v-model:value="modalForm.detailUrl" placeholder="请输入视频详情地址" />
         </n-form-item>
+        <n-form-item label="视频解析器" path="player">
+          <n-input v-model:value="modalForm.player" placeholder="请输入视频解析器地址" />
+        </n-form-item>
         <n-form-item
           v-if="modalAction === 'edit'"
           label="采集源状态"
@@ -161,6 +164,7 @@ const columns = [
   { title: '采集源名称', key: 'sourceName', width: 150, ellipsis: { tooltip: true } },
   { title: '视频列表地址', key: 'listUrl', width: 300, ellipsis: { tooltip: true } },
   { title: '视频详情地址', key: 'detailUrl', width: 300, ellipsis: { tooltip: true } },
+  { title: '解析播放器', key: 'player', width: 200, ellipsis: { tooltip: true } },
   { title: '采集源状态', key: 'state.description', width: 150 },
   {
     title: '操作',
