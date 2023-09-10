@@ -64,10 +64,10 @@ import DPlayer from 'dplayer'
 import { onMounted } from 'vue'
 import Hls from 'hls.js'
 import api from './api'
-import { isWhitespace } from '~/src/utils'
+import { isNull, isWhitespace } from '~/src/utils'
 
 onMounted(() => {
-  createPlayer()
+  createDPlayer()
   createPlaylist()
 })
 
@@ -77,7 +77,7 @@ const playerType = ref(1)
 // 创建dp播放器
 const dp = ref()
 const videoRef = ref()
-function createPlayer() {
+function createDPlayer() {
   dp.value = new DPlayer({
     //初始化视频对象
     container: videoRef.value, //指定视频容器节点
@@ -101,23 +101,24 @@ const src = ref('')
 // 选择影片和播放器
 const movie = ref({})
 function changeMovie(player, url) {
-  if (!isWhitespace(player)) {
-    playerType.value = 2
-    src.value = player + url
+  if (isWhitespace(player) || isNull(player)) {
+    playerType.value = 1
+    createDPlayer()
+    dp.value.switchVideo({
+      url,
+      type: 'customHls',
+      customType: {
+        customHls: function (video) {
+          const hls = new Hls()
+          hls.loadSource(video.src)
+          hls.attachMedia(video)
+        },
+      },
+    })
     return
   }
-  playerType.value = 1
-  dp.value.switchVideo({
-    url,
-    type: 'customHls',
-    customType: {
-      customHls: function (video) {
-        const hls = new Hls()
-        hls.loadSource(video.src)
-        hls.attachMedia(video)
-      },
-    },
-  })
+  playerType.value = 2
+  src.value = player + url
 }
 
 // 创建播放列表
